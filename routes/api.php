@@ -18,13 +18,13 @@ use App\Quarter;
 |
 */
 
+header("Access-Control-Allow-Origin: *");
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 Route::get('/teams', function (Request $request) {
-
-    return Team::orderBy('name')->get();
+    return response()->json(['teams' => Team::orderBy('name')->get()]);
 });
 
 Route::get('/create/teams', function (Request $request) {
@@ -55,8 +55,10 @@ Route::get('/divide', function () {
         $groups = Group::all();
 
         if (sizeof($groups) > 0) {
-            return response()
-                ->json(['status' => '500', 'message' => 'Groups had been created!']);
+            $agroups = Group::where('group', 'A')->with('team')->get();
+            $bgroups = Group::where('group', 'B')->with('team')->get();
+            return response()->json(['agroups' => $agroups, 'bgroups' => $bgroups]);
+          
         } else {
             $groups = array_fill(0, 16, 0);
             $min = 0;
@@ -96,7 +98,11 @@ Route::get('/divide', function () {
                 $group->save();
             }
 
-            return response()->json(['status' => 200, 'message' => 'Has successfully divided into groups!']);
+
+            $agroups = Group::where('group', 'A')->with('team')->get();
+            $bgroups = Group::where('group', 'B')->with('team')->get();
+            return response()->json(['agroups' => $agroups, 'bgroups' => $bgroups]);
+
 
         }
 
@@ -213,6 +219,11 @@ Route::get('/first_play', function () {
     }
 });
 
+
+Route::get('/groups', function ()  {
+
+});
+
 Route::get('/playoff', function () {
 
     $teams = Team::all();
@@ -317,3 +328,4 @@ Route::get('/finalgame', function(){
             ->json(['status' => '500', 'message' => 'You should create teams first , divide them by groups , go through the first tour and go through playoff!']);
     }
 });
+
