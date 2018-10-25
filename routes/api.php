@@ -58,7 +58,7 @@ Route::get('/divide', function () {
             $agroups = Group::where('group', 'A')->with('team')->get();
             $bgroups = Group::where('group', 'B')->with('team')->get();
             return response()->json(['agroups' => $agroups, 'bgroups' => $bgroups]);
-          
+
         } else {
             $groups = array_fill(0, 16, 0);
             $min = 0;
